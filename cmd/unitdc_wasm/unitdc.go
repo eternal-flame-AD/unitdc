@@ -68,9 +68,12 @@ func main() {
 
 	wasmio.outputFunc = js.Global().Get("unitdc_init").Invoke(
 		js.FuncOf(func(this js.Value, p []js.Value) interface{} {
-			for _, l := range p {
-				line := l.String()
-				tokens, err := tokenizer.ParseTokenUntilEOF(bytes.NewBufferString(line))
+			inputType := p[0].String()
+			switch inputType {
+			case "eval":
+				evalDef := p[1]
+				code := evalDef.Get("code").String()
+				tokens, err := tokenizer.ParseTokenUntilEOF(bytes.NewBufferString(code))
 				if err != nil {
 					if err := wasmio.PrintError(err); err != nil {
 						return js.ValueOf(err.Error())
@@ -81,6 +84,8 @@ func main() {
 					return js.ValueOf(err.Error())
 				}
 				wasmio.RequestMoreInput()
+			default:
+				wasmio.PrintError(fmt.Errorf("unknown WASM ABI input type: %s", inputType))
 			}
 			return nil
 		}),
