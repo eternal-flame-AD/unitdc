@@ -14,4 +14,5 @@ var (
 	ErrEmptyStack       = InterpreterError{fmt.Errorf("stack empty")}
 	ErrIncompatibleUnit = InterpreterError{fmt.Errorf("incompatible units")}
 	ErrUnknownOperation = InterpreterError{fmt.Errorf("unknown operation")}
+	ErrUnknownUnit      = InterpreterError{fmt.Errorf("unknown unit identifier")}
 )

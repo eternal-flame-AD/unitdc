@@ -184,9 +184,11 @@ func (s *State) OperatorUnitConvert(unitTok syntax.TokenUnit) (err error) {
 		return
 	}
 
+	err = ErrUnknownUnit
 	if operand.UnitExponents.IsNoUnit() {
 		for _, u := range s.DerivedUnits {
 			if u.Identifier == unit {
+				err = nil
 				operand.UnitExponents = make(quantity.UCombination, len(u.UnitExponents))
 				copy(operand.UnitExponents, u.UnitExponents)
 				operand.Number = operand.Number*u.Multiplier + u.Offset
@@ -194,12 +196,14 @@ func (s *State) OperatorUnitConvert(unitTok syntax.TokenUnit) (err error) {
 		}
 		for _, u := range s.Units {
 			if u.Identifier == unit {
+				err = nil
 				operand.UnitExponents = quantity.UCombination{quantity.UExp{Unit: u, Exponent: 1}}
 			}
 		}
 	}
 	for _, u := range s.DerivedUnits {
 		if u.Identifier == unit {
+			err = nil
 			var newDerivedUnitsToUse quantity.UDerivedList
 			for _, ud := range operand.DerivedUnitsToUse {
 				if !ud.UnitExponents.HasOverlap(u.UnitExponents) {
@@ -212,6 +216,8 @@ func (s *State) OperatorUnitConvert(unitTok syntax.TokenUnit) (err error) {
 	}
 	for _, u := range s.Units {
 		if u.Identifier == unit {
+			err = nil
+
 			// clear all preferred derived units the contain this unit
 			var newDerivedUnitsToUse quantity.UDerivedList
 			for _, ud := range operand.DerivedUnitsToUse {
