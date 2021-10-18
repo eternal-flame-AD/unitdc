@@ -69,7 +69,7 @@ func (r *R) PrintQuantity(values []quantity.Q) (err error) {
 				unitStr += strconv.Itoa(u.Exponent) + " "
 			}
 		}
-		_, err = fmt.Fprintf(r.Output, "\t[%d]%f %s\n", i, num, unitStr)
+		_, err = fmt.Fprintf(r.Output, "\t[% 3d] %f %s\n", i-len(values)+1, num, unitStr)
 		if err != nil {
 			return
 		}

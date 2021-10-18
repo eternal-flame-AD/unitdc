@@ -29,21 +29,13 @@ func (w *wasmIO) ReadToken() (tok syntax.Token, err error) {
 }
 
 func (w *wasmIO) PrintQuantity(values []quantity.Q) (err error) {
-	valueStrings := make([]interface{}, len(values))
+	jsValues := make([]interface{}, len(values))
 	for i := range values {
-		num, unit := values[i].Format()
-		unitStr := ""
-		for _, u := range unit {
-			unitStr += fmt.Sprintf("(%s)", u.Identifier)
-			if u.Exponent != 1 {
-				unitStr += strconv.Itoa(u.Exponent) + " "
-			}
-		}
-		valueStrings[i] = fmt.Sprintf("%f %s", num, unitStr)
+		jsValues[i] = quantityAsJSValue(values[i])
 	}
 	w.outputFunc.Invoke(
-		"quantity_str",
-		valueStrings,
+		"quantity",
+		jsValues,
 	)
 	return nil
 }
@@ -56,9 +48,54 @@ func (w *wasmIO) PrintError(err error) error {
 	return nil
 }
 
-func (w *wasmIO) RequestMoreInput() {
+type wasmIOState struct {
+	QuantitiesOnStack []quantity.Q
+}
+
+func quantityAsDisplayStr(q quantity.Q) string {
+	num, unit := q.Format()
+	unitStr := ""
+	for _, u := range unit {
+		unitStr += fmt.Sprintf("(%s)", u.Identifier)
+		if u.Exponent != 1 {
+			unitStr += strconv.Itoa(u.Exponent) + " "
+		}
+	}
+	return fmt.Sprintf("%f %s", num, unitStr)
+}
+
+func quantityAsJSValue(q quantity.Q) js.Value {
+	num, list := q.Format()
+	listAsIface := make([]interface{}, len(list))
+	for i := range list {
+		listAsIface[i] = map[string]interface{}{
+			"Exponent":   list[i].Exponent,
+			"Identifier": list[i].Identifier,
+		}
+	}
+	return js.ValueOf(
+		map[string]interface{}{
+			"display": map[string]interface{}{
+				"num":  num,
+				"unit": listAsIface,
+				"str":  quantityAsDisplayStr(q),
+			},
+		},
+	)
+}
+
+func (w *wasmIO) RequestMoreInput(state wasmIOState) {
+	stack := make([]interface{}, len(state.QuantitiesOnStack))
+	for i := range stack {
+		stack[i] = quantityAsJSValue(state.QuantitiesOnStack[i])
+	}
 	w.outputFunc.Invoke(
 		"ready",
+		map[string]interface{}{
+			"state": map[string]interface{}{
+				"stack": stack,
+			},
+		},
 	)
 }
 
@@ -83,7 +120,9 @@ func main() {
 				if err := interp.HandleTokensFromInput(); err != nil {
 					return js.ValueOf(err.Error())
 				}
-				wasmio.RequestMoreInput()
+				wasmio.RequestMoreInput(wasmIOState{
+					QuantitiesOnStack: interp.StackCopy(),
+				})
 			default:
 				wasmio.PrintError(fmt.Errorf("unknown WASM ABI input type: %s", inputType))
 			}
@@ -91,7 +130,9 @@ func main() {
 		}),
 	)
 
-	wasmio.RequestMoreInput()
+	wasmio.RequestMoreInput(wasmIOState{
+		QuantitiesOnStack: interp.StackCopy(),
+	})
 
 	select {}
 }

@@ -2,6 +2,18 @@ package interpreter
 
 import "github.com/eternal-flame-ad/unitdc/quantity"
 
+func (s *State) StackCopy() (q []quantity.Q) {
+	q = make([]quantity.Q, s.StackDepth())
+	for i := range q {
+		q[i] = quantity.Q{
+			Number:            s.Stack[i].Number,
+			UnitExponents:     s.Stack[i].UnitExponents.Clone(),
+			DerivedUnitsToUse: s.Stack[i].DerivedUnitsToUse.Clone(),
+		}
+	}
+	return
+}
+
 func (s *State) StackPush(q quantity.Q) {
 	q.UnitExponents = q.UnitExponents.Clone()
 	q.DerivedUnitsToUse = q.DerivedUnitsToUse.Clone()
