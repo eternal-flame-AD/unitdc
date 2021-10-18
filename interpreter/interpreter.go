@@ -65,12 +65,12 @@ func (s *State) handleToken(t syntax.Token) (err error) {
 		case "r":
 			return s.OperatorR()
 		default:
-			return ErrUnknownOperation
+			return ErrUnknownOperation{t}
 		}
 	case *syntax.TokenUnit:
 		return s.OperatorUnitConvert(*t)
 	default:
-		return ErrUnknownOperation
+		return ErrUnknownOperation{t}
 	}
 }
 

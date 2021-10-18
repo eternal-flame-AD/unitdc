@@ -28,7 +28,7 @@ func (s *State) OperatorPlus() (err error) {
 	}()
 
 	if !operand1.UnitExponents.Equal(&operand2.UnitExponents) {
-		err = ErrIncompatibleUnit
+		err = ErrIncompatibleUnit{OffendingUnit: operand2.UnitExponents, TargetUnit: operand1.UnitExponents}
 		return
 	}
 
@@ -72,7 +72,7 @@ func (s *State) OperatorMinus() (err error) {
 	}()
 
 	if !operand1.UnitExponents.Equal(&operand2.UnitExponents) {
-		err = ErrIncompatibleUnit
+		err = ErrIncompatibleUnit{OffendingUnit: operand2.UnitExponents, TargetUnit: operand1.UnitExponents}
 		return
 	}
 

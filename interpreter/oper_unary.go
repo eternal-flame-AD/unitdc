@@ -66,7 +66,10 @@ func (s *State) OperatorV() (err error) {
 	res.UnitExponents.Simplify()
 	for i := range res.UnitExponents {
 		if res.UnitExponents[i].Exponent%2 != 0 {
-			err = ErrIncompatibleUnit
+			err = ErrIncompatibleUnit{
+				OffendingUnit: res.UnitExponents,
+				TargetUnit:    nil,
+			}
 			return
 		}
 		res.UnitExponents[i].Exponent /= 2
@@ -184,7 +187,7 @@ func (s *State) OperatorUnitConvert(unitTok syntax.TokenUnit) (err error) {
 		return
 	}
 
-	err = ErrUnknownUnit
+	err = ErrUnknownUnit{unit}
 	if operand.UnitExponents.IsNoUnit() {
 		for _, u := range s.DerivedUnits {
 			if u.Identifier == unit {

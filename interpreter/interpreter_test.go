@@ -25,7 +25,7 @@ func TestInterpreter(t *testing.T) {
 					&syntax.TokenOperator{Literal: operator},
 				}
 				So(mockInterpreter.HandleTokensFromInput(), ShouldBeNil)
-				So(mockOutput, ShouldExpectOutputErrors, ErrEmptyStack)
+				So(mockOutput, ShouldExpectOutputErrors, ErrEmptyStack{})
 				Convey("error should not alter stack", func() {
 					So(mockInterpreter.StackDepth(), ShouldEqual, 1)
 					So(mockInterpreter.Stack[mockInterpreter.StackPointer].Number,
@@ -40,7 +40,7 @@ func TestInterpreter(t *testing.T) {
 					&syntax.TokenOperator{Literal: "+"},
 				}
 				So(mockInterpreter.HandleTokensFromInput(), ShouldBeNil)
-				So(mockOutput, ShouldExpectOutputErrors, ErrEmptyStack)
+				So(mockOutput, ShouldExpectOutputErrors, ErrEmptyStack{})
 				Convey("error should not alter stack", func() {
 					So(mockInterpreter.StackDepth(), ShouldEqual, 0)
 				})
@@ -66,7 +66,7 @@ func TestInterpreter(t *testing.T) {
 				So(v3, ShouldBeNil)
 				So(err1, ShouldBeNil)
 				So(err2, ShouldBeNil)
-				So(err3, ShouldBeError, ErrEmptyStack)
+				So(err3, ShouldBeError, ErrEmptyStack{})
 			})
 			Convey("Full stack should leak", func() {
 				for i := 0; i <= MaxStackDepth; i++ {
@@ -79,7 +79,7 @@ func TestInterpreter(t *testing.T) {
 					So(v.Number, ShouldAlmostEqual, float64(i))
 				}
 				v, err := mockInterpreter.StackPop()
-				So(err, ShouldBeError, ErrEmptyStack)
+				So(err, ShouldBeError, ErrEmptyStack{})
 				So(v, ShouldBeNil)
 			})
 		})

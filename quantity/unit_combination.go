@@ -1,6 +1,10 @@
 package quantity
 
-import "sort"
+import (
+	"bytes"
+	"fmt"
+	"sort"
+)
 
 type UCombination []UExp
 
@@ -157,4 +161,16 @@ func (u UCombination) Less(i int, j int) bool {
 // Swap swaps the elements with indexes i and j.
 func (u UCombination) Swap(i int, j int) {
 	u[i], u[j] = u[j], u[i]
+}
+
+func (u UCombination) String() string {
+	u.Simplify()
+	var b bytes.Buffer
+	for i := range u {
+		fmt.Fprintf(&b, "(%s)", u[i].Unit.Identifier)
+		if u[i].Exponent != 1 {
+			fmt.Fprintf(&b, "%d", u[i].Exponent)
+		}
+	}
+	return b.String()
 }

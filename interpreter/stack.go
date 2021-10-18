@@ -29,7 +29,7 @@ func (s *State) StackPush(q quantity.Q) {
 
 func (s *State) StackPop() (q *quantity.Q, err error) {
 	if s.StackPointer == -1 {
-		return nil, ErrEmptyStack
+		return nil, ErrEmptyStack{}
 	}
 	q = &quantity.Q{
 		Number:            s.Stack[s.StackPointer].Number,
