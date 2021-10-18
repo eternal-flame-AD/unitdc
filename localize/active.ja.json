@@ -1,0 +1,9 @@
+{
+    "InterpreterError_IncompatibleUnitConvert": "単位　{{.OffendingUnit}}　は　{{.TargetUnit}}　に変換できません。",
+    "InterpreterError_IncompatibleUnitUnacceptable": "このコマンドは {{.OffendingUnit}} に適用されていません。",
+    "InterpreterError_StackEmpty": "スタックは空です。",
+    "InterpreterError_UnknownOperation": "定義されていないコマンドです：{{.Operation}}",
+    "InterpreterError_UnknownUnit": "定義されていない単位です：{{.UnitIdent}}",
+    "Repl_ErrorMsg": "エラー： {{.Error}}",
+    "Tokenizer_ErrUnknownToken": "文字列　{{.Token}}　は解析できません。"
+}

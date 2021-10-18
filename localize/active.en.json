@@ -1,0 +1,9 @@
+{
+    "InterpreterError_IncompatibleUnitConvert": "incompatible units: could not coerce {{.OffendingUnit}} to {{.TargetUnit}}",
+    "InterpreterError_IncompatibleUnitUnacceptable": "incompatible units: {{.OffendingUnit}} is unacceptable for this operation",
+    "InterpreterError_StackEmpty": "Stack Empty",
+    "InterpreterError_UnknownOperation": "undefined operation: {{.Operation}}",
+    "InterpreterError_UnknownUnit": "undefined unit: {{.UnitIdent}}",
+    "Repl_ErrorMsg": "Error: {{.Error}}",
+    "Tokenizer_ErrUnknownToken": "unknown token: {{.Token}}"
+}

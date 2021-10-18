@@ -7,9 +7,11 @@ import (
 	"io"
 	"strconv"
 
+	"github.com/eternal-flame-ad/unitdc/localize"
 	"github.com/eternal-flame-ad/unitdc/quantity"
 	"github.com/eternal-flame-ad/unitdc/syntax"
 	"github.com/eternal-flame-ad/unitdc/tokenizer"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
 type R struct {
@@ -81,6 +83,14 @@ func (r *R) PrintError(err error) error {
 	if r.OutputErr != nil {
 		output = r.OutputErr
 	}
-	_, errOut := fmt.Fprintf(output, "Error: %v\n", err)
-	return errOut
+	_, outputErr := fmt.Fprintln(output, localize.Localizer().MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "Repl_ErrorMsg",
+			Other: "Error: {{.Error}}",
+		},
+		TemplateData: map[string]interface{}{
+			"Error": err.Error(),
+		},
+	}))
+	return outputErr
 }

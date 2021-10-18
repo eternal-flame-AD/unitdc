@@ -2,16 +2,18 @@ package tokenizer
 
 import (
 	"bytes"
-	"fmt"
+	"errors"
 	"io"
 	"regexp"
 	"unicode"
 
+	"github.com/eternal-flame-ad/unitdc/localize"
 	"github.com/eternal-flame-ad/unitdc/syntax"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
 var (
-	operatorTokenRegexp = regexp.MustCompile("^[cdrbpnPf+\\-*/]$")
+	operatorTokenRegexp = regexp.MustCompile("^[cdrbpnvf+\\-*/]$")
 	numericTokenRegexp  = regexp.MustCompile("^(\\+|-)?[0-9._]+(e(\\+|-)?[0-9_]+)?$")
 	unitTokenRegexp     = regexp.MustCompile("^\\(1|[a-zA-Z]\\w*\\)$")
 )
@@ -87,5 +89,13 @@ func ParseToken(r io.RuneReader) (syntax.Token, error) {
 		return &syntax.TokenOperator{Literal: tokenLiteral}, nil
 	}
 
-	return nil, fmt.Errorf("cannot parse token %s", tokenLiteral)
+	return nil, errors.New(localize.Localizer().MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "Tokenizer_ErrUnknownToken",
+			Other: "unknown token: {{.Token}}",
+		},
+		TemplateData: map[string]interface{}{
+			"Token": tokenLiteral,
+		},
+	}))
 }

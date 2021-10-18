@@ -1,17 +1,22 @@
 package interpreter
 
 import (
-	"fmt"
-
+	"github.com/eternal-flame-ad/unitdc/localize"
 	"github.com/eternal-flame-ad/unitdc/quantity"
 	"github.com/eternal-flame-ad/unitdc/syntax"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
 type ErrEmptyStack struct {
 }
 
 func (e ErrEmptyStack) Error() string {
-	return fmt.Sprintf("stack empty")
+	return localize.Localizer().MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "InterpreterError_StackEmpty",
+			Other: "Stack Empty",
+		},
+	})
 }
 
 type ErrIncompatibleUnit struct {
@@ -21,13 +26,26 @@ type ErrIncompatibleUnit struct {
 
 func (e ErrIncompatibleUnit) Error() string {
 	if e.TargetUnit != nil {
-		return fmt.Sprintf("incompatible units: could not coerce %v into %v",
-			e.OffendingUnit, e.TargetUnit,
-		)
+		return localize.Localizer().MustLocalize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:    "InterpreterError_IncompatibleUnitConvert",
+				Other: "incompatible units: could not coerce {{.OffendingUnit}} to {{.TargetUnit}}",
+			},
+			TemplateData: map[string]interface{}{
+				"OffendingUnit": e.OffendingUnit.String(),
+				"TargetUnit":    e.TargetUnit.String(),
+			},
+		})
 	}
-	return fmt.Sprintf("incompatible units: %v is unacceptable for this operation",
-		e.OffendingUnit,
-	)
+	return localize.Localizer().MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "InterpreterError_IncompatibleUnitUnacceptable",
+			Other: "incompatible units: {{.OffendingUnit}} is unacceptable for this operation",
+		},
+		TemplateData: map[string]interface{}{
+			"OffendingUnit": e.OffendingUnit.String(),
+		},
+	})
 }
 
 type ErrUnknownOperation struct {
@@ -35,7 +53,15 @@ type ErrUnknownOperation struct {
 }
 
 func (e ErrUnknownOperation) Error() string {
-	return fmt.Sprintf("undefined operation: %v", e.Token)
+	return localize.Localizer().MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "InterpreterError_UnknownOperation",
+			Other: "undefined operation: {{.Operation}}",
+		},
+		TemplateData: map[string]interface{}{
+			"Operation": e.Token.String(),
+		},
+	})
 }
 
 type ErrUnknownUnit struct {
@@ -43,5 +69,13 @@ type ErrUnknownUnit struct {
 }
 
 func (e ErrUnknownUnit) Error() string {
-	return fmt.Sprintf("undefined unit: (%s)", e.UnitIdentifier)
+	return localize.Localizer().MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "InterpreterError_UnknownUnit",
+			Other: "undefined unit: {{.UnitIdent}}",
+		},
+		TemplateData: map[string]interface{}{
+			"UnitIdent": e.UnitIdentifier,
+		},
+	})
 }
